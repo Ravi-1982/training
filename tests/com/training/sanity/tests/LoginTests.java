@@ -1,17 +1,19 @@
 package com.training.sanity.tests;
 
+import java.awt.AWTException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-//import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
+import com.training.dataproviders.LoginDataProviders;
 import com.training.generics.ScreenShot;
 import com.training.pom.LoginPOM;
 import com.training.utility.DriverFactory;
@@ -26,16 +28,22 @@ public class LoginTests {
 	private static ScreenShot screenShot;
 
 	@BeforeClass
+
 	public static void setUpBeforeClass() throws IOException {
+
 		properties = new Properties();
+
 		FileInputStream inStream = new FileInputStream("./resources/others.properties");
+
 		properties.load(inStream);
 		driver = DriverFactory.getDriver(DriverNames.CHROME);
 		loginPOM = new LoginPOM(driver); 
-		baseUrl = properties.getProperty("baseUrl");
+
+		baseUrl = properties.getProperty("baseURL");
 		screenShot = new ScreenShot(driver); 
-		// open the browser 
 		driver.get(baseUrl);
+		driver.manage().deleteAllCookies();
+		screenShot.captureScreenShot("Login Page");
 	}
 
 /*	@BeforeMethod
@@ -50,13 +58,50 @@ public class LoginTests {
 		        driver.get("baseUrl");
 	}*/
 	
-	@Test
-	public void validLoginTest() {
+
+	@Test(priority=1)
+	//RTTC_011 test case
+	public void validLoginTest() throws InterruptedException, AWTException {
+
 		loginPOM.sendUserName("admin");
+
 		loginPOM.sendPassword("admin@123");
-		loginPOM.clickLoginBtn(); 
-		screenShot.captureScreenShot("First");
+
+		screenShot.captureScreenShot("After entering the Login credentials");
+
+		loginPOM.clickLoginBtn();
+
+		screenShot.captureScreenShot("Loggged in");
+		Thread.sleep(1000);
+		driver.quit();
 	}
+	
+	@Test(priority=2)
+	//RTTC_012
+	public void validLoginTest1() throws InterruptedException, AWTException {
+
+		loginPOM.sendUserName("admin");
+
+		loginPOM.sendPassword("admin@123");
+
+		screenShot.captureScreenShot("After entering the Login credentials");
+
+		loginPOM.clickLoginBtn();
+
+		screenShot.captureScreenShot("Loggged in");
+
+		Thread.sleep(3000);
+
+		loginPOM.clickCatalogName();
+
+		screenShot.captureScreenShot("List of items in Catalog"); 
+
+		loginPOM.clickCatagories();
+
+		screenShot.captureScreenShot("List of items in Category"); 
+
+
+	} 
 	/*@AfterMethod
 	public void tearDown() throws Exception {
 		Thread.sleep(1000);
